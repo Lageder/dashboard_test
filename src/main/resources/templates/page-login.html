@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" class="h-100">
+<html lang="en" class="h-100" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/themeleaf-extras-springsecurity5">
 
 <head>
     <meta charset="utf-8">
@@ -22,14 +23,14 @@
                             <div class="col-xl-12">
                                 <div class="auth-form">
                                     <h4 class="text-center mb-4">Sign in your account</h4>
-                                    <form action="index.html">
+                                    <form th:action="@{/page-login}" method="post">
                                         <div class="form-group">
-                                            <label><strong>Email</strong></label>
-                                            <input type="email" class="form-control" value="hello@example.com">
+                                            <label><strong>ID</strong></label>
+                                            <input type="text" class="form-control" id="username" name="username">
                                         </div>
                                         <div class="form-group">
                                             <label><strong>Password</strong></label>
-                                            <input type="password" class="form-control" value="Password">
+                                            <input type="password" class="form-control" id="password" name="password">
                                         </div>
                                         <div class="form-row d-flex justify-content-between mt-4 mb-2">
                                             <div class="form-group">
@@ -48,6 +49,12 @@
                                     </form>
                                     <div class="new-account mt-3">
                                         <p>Don't have an account? <a class="text-primary" href="./page-register.html">Sign up</a></p>
+                                    </div>
+                                    <div th:if="${param.error}">
+                                        Invalid username and password
+                                    </div>
+                                    <div th:if="${param.logout}">
+                                        You have been logged out
                                     </div>
                                 </div>
                             </div>
