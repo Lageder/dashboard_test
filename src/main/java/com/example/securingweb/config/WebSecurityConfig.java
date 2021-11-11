@@ -1,4 +1,4 @@
-package com.example.securingweb;
+package com.example.securingweb.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +23,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/", "/index")
+                .antMatchers("/", "/index", "/api/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
@@ -35,8 +35,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordParameter("password")
                 .permitAll()
                 .and()
+            .csrf()
+                .ignoringAntMatchers("/api/**")
+                .and()
             .logout()
-                .logoutSuccessUrl("/page-login.html")
+                .logoutSuccessUrl("/page-login")
                 .permitAll();
     }
 
