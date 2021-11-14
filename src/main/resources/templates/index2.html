@@ -176,10 +176,10 @@
                     <!-- <li><a href="index.html"><i class="icon icon-single-04"></i><span class="nav-text">Dashboard</span></a>
                     </li> -->
                     <li><a class="has-arrow" href="javascript:void()" aria-expanded="false"><i
-                                class="icon icon-single-04"></i><span class="nav-text">Dashboard</span></a>
+                                class="icon icon-single-04"></i><span class="nav-text">Overview</span></a>
                         <ul aria-expanded="false">
-                            <li><a href="./index.html">Dashboard 1</a></li>
-                            <li><a href="./index2.html">Dashboard 2</a></li>
+                            <li><a href="./index.html">Today</a></li>
+                            <li><a href="./index2.html">Daily</a></li>
                         </ul>
                     </li>
                     <li class="nav-label">Extra</li>
@@ -212,7 +212,68 @@
         ***********************************-->
         <div class="content-body">
             <div class="container-fluid">
-                <div class="row page-titles mx-0">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Guest overview</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <canvas id="guest-overview-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Income overview</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div id="" class=""></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Top 5 Symptoms</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div id="" class=""></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Prescription</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div id="" class=""></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- <div class="row page-titles mx-0">
                     <div class="col-sm-6 p-md-0">
                         <div class="welcome-text">
                             <h4>Hi, welcome back!</h4>
@@ -689,15 +750,15 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
+                </div> -->
+                <!-- 
+                    <div class="row">
                     <div class="col-lg-4">
                         <div class="card">
                             <div class="card-body">
                                 <div class="year-calendar"></div>
                             </div>
                         </div>
-                        <!-- /# card -->
                     </div>
                     <div class="col-lg-8">
                         <div class="card">
@@ -813,7 +874,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> 
+            -->
             </div>
         </div>
         <!--**********************************
@@ -853,6 +915,7 @@
     ***********************************-->
     <!-- Required vendors -->
     <script src="./vendor/global/global.min.js"></script>
+    <script src="./vendor/chart.js/Chart.bundle.min.js"></script>
     <script src="./js/quixnav-init.js"></script>
     <script src="./js/custom.min.js"></script>
 
