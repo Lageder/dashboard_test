@@ -83,6 +83,10 @@
 
 
     const guestOverviewCanvas = $("#guest-overview-chart");
+    const incomeOverviewCanvas = $("#income-overview-chart");
+    const top5SymptomsCanvas = $("#top-5-symptoms-chart");
+    const prescriptionCanvas = $("#prescription-chart");
+
     var guestOverviewChart = new Chart( guestOverviewCanvas, {
         type : 'bar',
         data : {
@@ -102,8 +106,48 @@
     });
 
 
+    var incomeOverviewChart = new Chart(incomeOverviewCanvas, {
+        type : 'line',
+        data: {
+            labels : ['Sun','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+            datasets: [
+                {
+                    label: 'My First Dataset',
+                    data : [20,30,10,60,100,80,40],
+                    fill: true,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }
+            ]
+        }
+    });
 
 
+    var top5SymptomsChart = new Chart(top5SymptomsCanvas, {
+        type : 'pie',
+        data: {
+            labels : ['Sun','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+            datasets: [
+                {
+                    label: 'My First Dataset',
+                    data : [20,30,10,60,100,80,40],
+                }
+            ]
+        }
+    });
+
+    var prescriptionChart = new Chart(prescriptionCanvas, {
+        type : 'pie',
+        data: {
+            labels : ['Sun','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+            datasets: [
+                {
+                    label: 'My First Dataset',
+                    data : [20,30,10,60,100,80,40],
+                }
+            ]
+        }
+    });
 })(jQuery);
 
 
