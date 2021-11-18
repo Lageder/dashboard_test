@@ -11,11 +11,11 @@ import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.time.LocalDateTime;
 
-@Table
+@Table("dayoverview")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DayOverview {
+public class TodayOverview {
 
     @PrimaryKeyColumn(name = "symptom", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
     private String symptom;

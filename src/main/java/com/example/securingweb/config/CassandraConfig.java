@@ -60,32 +60,32 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
         return CassandraEntityClassScanner.scan(getEntityBasePackages());
     }
 
-    @ReadingConverter
-    public enum LocalDateTimeReadConverter implements Converter<Instant, LocalDateTime> {
-        INSTANT;
-
-        @Override
-        public LocalDateTime convert(Instant instant) {
-            return LocalDateTime.ofInstant(instant, ZoneOffset.systemDefault());
-        }
-    }
-
-    @WritingConverter
-    public enum LocalDateTimeWriteConverter implements Converter<LocalDateTime, Instant> {
-        INSTANT;
-
-
-        @Override
-        public Instant convert(LocalDateTime source) {
-            return source.atZone(ZoneId.systemDefault()).toInstant();
-        }
-    }
-
-    @Bean
-    public CassandraCustomConversions customConversions() {
-        Set<Converter<?, ?>> converters = new HashSet<>();
-        converters.add(LocalDateTimeReadConverter.INSTANT);
-        converters.add(LocalDateTimeWriteConverter.INSTANT);
-        return new CassandraCustomConversions(new ArrayList<>(converters));
-    }
+//    @ReadingConverter
+//    public enum LocalDateTimeReadConverter implements Converter<Instant, LocalDateTime> {
+//        INSTANT;
+//
+//        @Override
+//        public LocalDateTime convert(Instant instant) {
+//            return LocalDateTime.ofInstant(instant, ZoneOffset.of("+0"));
+//        }
+//    }
+//
+//    @WritingConverter
+//    public enum LocalDateTimeWriteConverter implements Converter<LocalDateTime, Instant> {
+//        INSTANT;
+//
+//
+//        @Override
+//        public Instant convert(LocalDateTime source) {
+//            return source.atZone(ZoneOffset.of("+0")).toInstant();
+//        }
+//    }
+//
+//    @Bean
+//    public CassandraCustomConversions customConversions() {
+//        Set<Converter<?, ?>> converters = new HashSet<>();
+//        converters.add(LocalDateTimeReadConverter.INSTANT);
+//        converters.add(LocalDateTimeWriteConverter.INSTANT);
+//        return new CassandraCustomConversions(new ArrayList<>(converters));
+//    }
 }
