@@ -1,9 +1,12 @@
 package com.example.securingweb.controller;
 
+import com.example.securingweb.model.db.DailyPrescription;
 import com.example.securingweb.model.db.TodayOverview;
+import com.example.securingweb.model.pre.defined.Prescription;
 import com.example.securingweb.model.pre.defined.Symptoms;
 import com.example.securingweb.model.ui.TodayGraph;
 import com.example.securingweb.repository.IncomeRepository;
+import com.example.securingweb.repository.PrescriptionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,15 +25,17 @@ import java.util.*;
 @RequiredArgsConstructor
 public class TodayController {
 
-    private final IncomeRepository repository;
+    private final IncomeRepository incomeRepository;
+
+    private final PrescriptionRepository prescriptionRepository;
 
     @GetMapping("/income/overview")
     public ResponseEntity<List<TodayGraph>> getIncome() {
         LocalDateTime from = LocalDateTime.of(2021,11,12,2,0,0);
         LocalDateTime to = LocalDateTime.of(2021,11,12,3,0,0);
-        Integer etcFee = Optional.ofNullable(repository.getIncomeByTimeRange(Symptoms.ETC.name(), from, to))
+        Integer etcFee = Optional.ofNullable(incomeRepository.getIncomeByTimeRange(Symptoms.ETC.name(), from, to))
                 .orElse(Integer.parseInt("0"));
-        Integer etcFee2 = Optional.ofNullable(repository.getIncomeByTimeRange(Symptoms.ETC.name(), from.minusDays(1), to.minusDays(1)))
+        Integer etcFee2 = Optional.ofNullable(incomeRepository.getIncomeByTimeRange(Symptoms.ETC.name(), from.minusDays(1), to.minusDays(1)))
                 .orElse(Integer.parseInt("0"));
         List<TodayGraph> list = new ArrayList<>();
         list.add(new TodayGraph("etc", etcFee, etcFee2));
@@ -44,7 +49,7 @@ public class TodayController {
         LocalDateTime from = now.truncatedTo(ChronoUnit.DAYS);
         LocalDateTime to = from.plusDays(1);
         for (Symptoms symptom : Symptoms.values()) {
-            map.put(symptom.name(), Optional.ofNullable(repository.countPeople(symptom.name(), from, to)).orElse(0));
+            map.put(symptom.name(), Optional.ofNullable(incomeRepository.countPeople(symptom.name(), from, to)).orElse(0));
         }
         // todo : Add json parsing
         // ***
@@ -69,34 +74,25 @@ public class TodayController {
         LocalDateTime from = now.truncatedTo(ChronoUnit.DAYS);
         LocalDateTime to = from.plusDays(1);
         for (Symptoms symptom : Symptoms.values()) {
-            total += Optional.ofNullable(repository.getIncomeByTimeRange(symptom.name(), from, to)).orElse(0);
+            total += Optional.ofNullable(incomeRepository.getIncomeByTimeRange(symptom.name(), from, to)).orElse(0);
         }
         // todo : Add json parsing
         String ret = "";
         return new ResponseEntity<>(ret, HttpStatus.OK);
     }
 
-    @PostMapping("/test")
-    public ResponseEntity<TodayOverview> test() {
-        Random r = new Random();
-        try {
-            TodayOverview data = repository.insert(new TodayOverview(
-                    randomSymptom(), LocalDateTime.now().minusHours(r.nextInt(10)), r.nextInt(10000)
-            ));
-            return new ResponseEntity<>(data, HttpStatus.CREATED);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     @PostMapping("/test/trigger")
     public ResponseEntity<Void> trigger() {
         try {
             Random r = new Random();
-            for (int i = 0; i < 10000; i++) {
-                TodayOverview temp = new TodayOverview(randomSymptom(), LocalDateTime.now().minusDays(r.nextInt(14)), r.nextInt(5000));
-                repository.insert(temp);
+            for (int i = 0; i < 1000; i++) {
+                Symptoms symptom = randomSymptom();
+                Prescription prescription = randomPrescription(symptom);
+                LocalDateTime time = LocalDateTime.now().minusDays(r.nextInt(14));
+                TodayOverview temp = new TodayOverview(symptom.name(), time, r.nextInt(5000));
+                DailyPrescription dailyPrescription = new DailyPrescription(prescription.name(), time);
+                incomeRepository.insert(temp);
+                prescriptionRepository.insert(dailyPrescription);
             }
             return ResponseEntity.ok().build();
         } catch (Exception e) {
@@ -104,23 +100,44 @@ public class TodayController {
         }
     }
 
-    private String randomSymptom() {
+    private Symptoms randomSymptom() {
         Random r = new Random();
-        int temp = r.nextInt() % Symptoms.values().length;
+        int temp = r.nextInt(5000) % Symptoms.values().length;
         switch (temp) {
             case 0:
-                return Symptoms.BAD_COUGH.name();
+                return Symptoms.BAD_COUGH;
             case 1:
-                return Symptoms.HEADACHE.name();
+                return Symptoms.HEADACHE;
             case 2:
-                return Symptoms.CHEST_CONGESTION.name();
+                return Symptoms.CHEST_CONGESTION;
             case 3:
-                return Symptoms.RUNNY_NOSE.name();
+                return Symptoms.RUNNY_NOSE;
             case 4:
             default:
-                return Symptoms.ETC.name();
+                return Symptoms.ETC;
         }
     }
 
+    private Prescription randomPrescription(Symptoms symptoms) {
+        Random r = new Random();
+        int temp = r.nextInt();
+        switch (symptoms) {
+            case HEADACHE:
+                temp %= 2;
+                return (temp == 0) ? Prescription.ACETAMINOPHEN : Prescription.IBUPROFEN;
+            case RUNNY_NOSE:
+                temp %= 2;
+                return (temp == 0) ? Prescription.CHLORPHENAMINE : Prescription.CARBINOXAMINE;
+            case BAD_COUGH:
+                temp %= 2;
+                return (temp == 0) ? Prescription.DEXTROMETHORPHAN : Prescription.NOSCARPINE;
+            case CHEST_CONGESTION:
+                temp %= 2;
+                return (temp == 0) ? Prescription.GINKGOLIDES : Prescription.TERPENE_LACTONES;
+            case ETC:
+            default:
+                return Prescription.GUAIFENESIN;
+        }
+    }
 
 }
