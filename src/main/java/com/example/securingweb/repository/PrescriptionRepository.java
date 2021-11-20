@@ -3,7 +3,6 @@ package com.example.securingweb.repository;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 import com.datastax.oss.driver.api.querybuilder.QueryBuilder;
 import com.datastax.oss.driver.api.querybuilder.select.Select;
-import com.datastax.oss.driver.api.querybuilder.select.Selector;
 import com.example.securingweb.model.db.DailyPrescription;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.cassandra.core.CassandraOperations;
@@ -21,7 +20,7 @@ public class PrescriptionRepository {
     private final CassandraOperations operations;
 
     public Integer countWithRange(String name, LocalDateTime from, LocalDateTime to) {
-        Select query = QueryBuilder.selectFrom("prescription").function("COUNT", Selector.column("*"))
+        Select query = QueryBuilder.selectFrom("prescription").countAll()
                 .whereColumn("name").isEqualTo(literal(name))
                 .whereColumn("deploy_time").isGreaterThanOrEqualTo(literal(toMs(from)))
                 .whereColumn("deploy_time").isLessThan(literal(toMs(to)));

@@ -30,7 +30,7 @@ public class IncomeRepository {
     }
 
     public Integer countPeople(String symptom, LocalDateTime from, LocalDateTime to) {
-        Select query = QueryBuilder.selectFrom("dayoverview").function("COUNT", Selector.column("*"))
+        Select query = QueryBuilder.selectFrom("dayoverview").countAll()
                 .whereColumn("symptom").isEqualTo(literal(symptom))
                 .whereColumn("visit_time").isGreaterThanOrEqualTo(literal(toMs(from)))
                 .whereColumn("visit_time").isLessThan(literal(toMs(to)));
