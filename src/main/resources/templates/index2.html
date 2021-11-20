@@ -915,7 +915,11 @@
     ***********************************-->
     <!-- Required vendors -->
     <script src="./vendor/global/global.min.js"></script>
-    <script src="./vendor/chart.js/Chart.bundle.min.js"></script>
+<!--     
+    <script type="module" src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/helpers.esm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/chart.js" integrity="sha256-wkfHADWHH09UG8GShuNFDT8rVBiaj2rEYkZuch9eRg8=" crossorigin="anonymous"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+    <!-- <script src="./vendor/chart.js/Chart.bundle.min.js"></script> -->
     <script src="./js/quixnav-init.js"></script>
     <script src="./js/custom.min.js"></script>
 
@@ -925,7 +929,7 @@
     <script src="./vendor/pg-calendar/js/pignose.calendar.min.js"></script>
 
 
-    <script src="./js/dashboard/dashboard-2.js"></script>
+    <script type="module" src="./js/dashboard/dashboard-2.js"></script>
     <!-- Circle progress -->
 
 </body>

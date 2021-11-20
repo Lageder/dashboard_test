@@ -1,6 +1,41 @@
+import {CategoryScale, Chart, registerables } from '../../vendor/chartjs/dist/chart.esm.js';
+import * as helpers from '../../vendor/chartjs/dist/helpers.esm.js';
+Chart.register(...registerables);
+
 (function($) {
     "use strict"
 
+    function barChartLabelFunction(data) {
+        return data.flatMap(element => {
+            const date = new Date(Date.parse(element['label']));
+            return date.getFullYear()+"-"+date.getMonth()+"-"+date.getDate();
+        })
+    }
+
+    function barChartDataFunction(data) {
+        return data.flatMap(element => {
+            return element['value'];
+        });
+    }
+
+    function convertGuestOverview(data) {
+        return data.slice(0, 7);
+    }
+
+    function updateBarChart(requestUrl, chart, convertDataCallback, labelCallback, dataCallback) {
+        $.ajax({
+            url : requestUrl,
+            method : "POST",
+            dataType : "json",
+            success : function(data, status) {
+                const convertedData = convertDataCallback(data);
+                chart.data.labels = labelCallback(convertedData);
+                chart.data.datasets[0]['data'] = dataCallback(convertedData);
+                console.log(chart);
+                chart.update();
+            }
+        });
+    }
 
     // var data = {
     //     labels: ['facebook', 'twitter', 'youtube', 'google plus'],
@@ -81,29 +116,114 @@
     //     theme: 'blue' // light, dark, blue
     // });
 
+    const chartColors = {
+        red: 'rgb(255, 99, 132)',
+        orange: 'rgb(255, 159, 64)',
+        yellow: 'rgb(255, 205, 86)',
+        green: 'rgb(75, 192, 192)',
+        blue: 'rgb(54, 162, 235)',
+        purple: 'rgb(153, 102, 255)',
+        grey: 'rgb(201, 203, 207)'
+    };
+    const colors = [chartColors.red, chartColors.orange, chartColors.yellow, chartColors.green, chartColors.blue, chartColors.purple, chartColors.grey];
+    const cache = new Map();
+    let width = null;
+    let height = null;
+
+    function createRadialGradient3(context, c1, c2, c3) {
+        const chartArea = context.chart.chartArea;
+        if (!chartArea) {
+          // This case happens on initial chart load
+          return;
+        }
+      
+        const chartWidth = chartArea.right - chartArea.left;
+        const chartHeight = chartArea.bottom - chartArea.top;
+        if (width !== chartWidth || height !== chartHeight) {
+          cache.clear();
+        }
+        let gradient = cache.get(c1 + c2 + c3);
+        if (!gradient) {
+          // Create the gradient because this is either the first render
+          // or the size of the chart has changed
+          width = chartWidth;
+          height = chartHeight;
+          const centerX = (chartArea.left + chartArea.right) / 2;
+          const centerY = (chartArea.top + chartArea.bottom) / 2;
+          const r = Math.min(
+            (chartArea.right - chartArea.left) / 2,
+            (chartArea.bottom - chartArea.top) / 2
+          );
+          const ctx = context.chart.ctx;
+          gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, r);
+          gradient.addColorStop(0, c1);
+          gradient.addColorStop(0.5, c2);
+          gradient.addColorStop(1, c3);
+          cache.set(c1 + c2 + c3, gradient);
+        }
+      
+        return gradient;
+      }
+
 
     const guestOverviewCanvas = $("#guest-overview-chart");
     const incomeOverviewCanvas = $("#income-overview-chart");
     const top5SymptomsCanvas = $("#top-5-symptoms-chart");
     const prescriptionCanvas = $("#prescription-chart");
 
+    var guestOverviewDatas = [];
+    var guestOverviewLabels = [];
     var guestOverviewChart = new Chart( guestOverviewCanvas, {
         type : 'bar',
         data : {
-            labels : ['Sun','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+            labels : guestOverviewLabels,
             datasets: [{
                 label : 'The visit number of guest per day',
-                data : [20,30,10,60,100,80,40]
-            }]
-        },
-        options : {
-            scales : {
-                y : {
-                    beginAtZero: true
+                data : guestOverviewDatas,
+                backgroundColor: function(context) {
+                    let c = colors[context.dataIndex];
+                    if (!c) {
+                        return;
+                    }
+                    if (context.active) {
+                        c = helpers.getHoverColor(c);
+                    }
+                    const mid = helpers.color(c).desaturate(0.2).darken(0.2).rgbString();
+                    const start = helpers.color(c).lighten(0.2).rotate(270).rgbString();
+                    const end = helpers.color(c).lighten(0.1).rgbString();
+                    return createRadialGradient3(context, start, mid, end);
                 }
-            }
+            }]
         }
     });
+
+    updateBarChart("/api/daily/test/trigger", guestOverviewChart, 
+        convertGuestOverview, barChartLabelFunction, barChartDataFunction);
+
+    setInterval(function(){
+            updateBarChart("/api/daily/test/trigger", guestOverviewChart, 
+                convertGuestOverview, barChartLabelFunction, barChartDataFunction);        
+    }, 60000);
+
+    // $.ajax({
+    //     url : "/api/daily/test/trigger",
+    //     method : "POST",
+    //     dataType : "json",
+    //     success : function(data, status) {
+    //         let slicedData = data.slice(0, 7);
+    //         guestOverviewDatas = slicedData.flatMap(function(d) {
+    //             return d['value'];
+    //         });
+    //         guestOverviewLabels = slicedData.flatMap(function(d){
+    //             const date = new Date(Date.parse(Date(d['label'])));
+    //             return date.getFullYear+"-"+date.getMonth()+"-"+date.getDate();
+    //         });
+    //         console.log(guestOverviewLabels, guestOverviewDatas, guestOverviewChart);
+    //         guestOverviewChart.data.labels=guestOverviewLabels;
+    //         guestOverviewChart.data.datasets[0]['data'] = guestOverviewDatas;
+    //         guestOverviewChart.update();
+    //     }
+    // });
 
 
     var incomeOverviewChart = new Chart(incomeOverviewCanvas, {
