@@ -12,6 +12,10 @@ Chart.register(...registerables);
         })
     }
 
+    function pieChartLabelFunction(data) {
+        return data.flatMap(element => { return element['label']; });
+    }
+
     function barChartDataFunction(data) {
         return data.flatMap(element => {
             return element['value'];
@@ -25,7 +29,7 @@ Chart.register(...registerables);
     function updateBarChart(requestUrl, chart, convertDataCallback, labelCallback, dataCallback) {
         $.ajax({
             url : requestUrl,
-            method : "POST",
+            // method : "POST",
             dataType : "json",
             success : function(data, status) {
                 const convertedData = convertDataCallback(data);
@@ -37,85 +41,6 @@ Chart.register(...registerables);
         });
     }
 
-    // var data = {
-    //     labels: ['facebook', 'twitter', 'youtube', 'google plus'],
-    //     series: [{
-    //                 value: 20,
-    //                 className: "bg-facebook"
-    //             },
-    //             {
-    //                 value: 10,
-    //                 className: "bg-twitter"
-    //             },
-    //             {
-    //                 value: 30,
-    //                 className: "bg-youtube"
-    //             },
-    //             {
-    //                 value: 40,
-    //                 className: "bg-google-plus"
-    //             }
-    //         ]
-    //         //        colors: ["#333", "#222", "#111"]
-    // };
-
-    // var options = {
-    //     labelInterpolationFnc: function(value) {
-    //         return value[0]
-    //     }
-    // };
-
-    // var responsiveOptions = [
-    //     ['screen and (min-width: 640px)', {
-    //         chartPadding: 30,
-    //         labelOffset: 100,
-    //         labelDirection: 'explode',
-    //         labelInterpolationFnc: function(value) {
-    //             return value;
-    //         }
-    //     }],
-    //     ['screen and (min-width: 1024px)', {
-    //         labelOffset: 80,
-    //         chartPadding: 20
-    //     }]
-    // ];
-
-    // new Chartist.Pie('.ct-pie-chart', data, options, responsiveOptions);
-
-
-    // /*----------------------------------*/
-
-    // var data = {
-    //     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    //     series: [
-    //         [5, 4, 3, 7, 5, 10, 3, 4, 8, 10, 6, 8],
-    //         [3, 2, 9, 5, 4, 6, 4, 6, 7, 8, 7, 4],
-    //         [4, 6, 3, 9, 6, 5, 2, 8, 3, , 5, 4],
-    //     ]
-    // };
-
-    // var options = {
-    //     seriesBarDistance: 10
-    // };
-
-    // var responsiveOptions = [
-    //     ['screen and (max-width: 640px)', {
-    //         seriesBarDistance: 5,
-    //         axisX: {
-    //             labelInterpolationFnc: function(value) {
-    //                 return value[0];
-    //             }
-    //         }
-    //     }]
-    // ];
-
-    // new Chartist.Bar('.ct-bar-chart', data, options, responsiveOptions);
-
-
-    // $('.year-calendar').pignoseCalendar({
-    //     theme: 'blue' // light, dark, blue
-    // });
-
     const chartColors = {
         red: 'rgb(255, 99, 132)',
         orange: 'rgb(255, 159, 64)',
@@ -125,6 +50,15 @@ Chart.register(...registerables);
         purple: 'rgb(153, 102, 255)',
         grey: 'rgb(201, 203, 207)'
     };
+    const DATE = {
+        SUN : {  name : "Sun",  value : 0 },
+        MON : {  name : "Mon",  value : 1 },
+        TUE : {  name : "Tue",  value : 2 },
+        WED : {  name : "Wed",  value : 3 },
+        THU : {  name : "THU",  value : 4 },
+        FRI : {  name : "FRI",  value : 5 },
+        SAT : {  name : "SAT",  value : 6 },
+    }
     const colors = [chartColors.red, chartColors.orange, chartColors.yellow, chartColors.green, chartColors.blue, chartColors.purple, chartColors.grey];
     const cache = new Map();
     let width = null;
@@ -163,111 +97,167 @@ Chart.register(...registerables);
         }
       
         return gradient;
-      }
+    }
 
+    function gradientBackgroundColor(context) {
+        let c = colors[context.dataIndex];
+        if (!c) {
+            return;
+        }
+        if (context.active) {
+            c = helpers.getHoverColor(c);
+        }
+        const mid = helpers.color(c).desaturate(0.2).darken(0.2).rgbString();
+        const start = helpers.color(c).lighten(0.2).rotate(270).rgbString();
+        const end = helpers.color(c).lighten(0.1).rgbString();
+        return createRadialGradient3(context, start, mid, end);
+    }
 
     const guestOverviewCanvas = $("#guest-overview-chart");
     const incomeOverviewCanvas = $("#income-overview-chart");
     const top5SymptomsCanvas = $("#top-5-symptoms-chart");
     const prescriptionCanvas = $("#prescription-chart");
 
-    var guestOverviewDatas = [];
-    var guestOverviewLabels = [];
     var guestOverviewChart = new Chart( guestOverviewCanvas, {
         type : 'bar',
         data : {
-            labels : guestOverviewLabels,
+            labels : [],
             datasets: [{
                 label : 'The visit number of guest per day',
-                data : guestOverviewDatas,
-                backgroundColor: function(context) {
-                    let c = colors[context.dataIndex];
-                    if (!c) {
-                        return;
-                    }
-                    if (context.active) {
-                        c = helpers.getHoverColor(c);
-                    }
-                    const mid = helpers.color(c).desaturate(0.2).darken(0.2).rgbString();
-                    const start = helpers.color(c).lighten(0.2).rotate(270).rgbString();
-                    const end = helpers.color(c).lighten(0.1).rgbString();
-                    return createRadialGradient3(context, start, mid, end);
-                }
+                data : [],
+                backgroundColor: [
+                    "rgba(52, 57, 87, 1.0)",
+                    "rgba(52, 57, 87, 0.8",
+                    "rgba(52, 57, 87, 0.6)",
+                    "rgba(52, 57, 87, 0.4)",
+                    "rgba(52, 57, 87, 0.2)",
+                    "rgba(52, 57, 87, 0.08)",
+                    "rgba(52, 57, 87, 0.06)"
+                ]//'#5873FE' // gradientBackgroundColor
             }]
         }
     });
 
-    updateBarChart("/api/daily/test/trigger", guestOverviewChart, 
-        convertGuestOverview, barChartLabelFunction, barChartDataFunction);
-
-    setInterval(function(){
-            updateBarChart("/api/daily/test/trigger", guestOverviewChart, 
-                convertGuestOverview, barChartLabelFunction, barChartDataFunction);        
-    }, 60000);
-
-    // $.ajax({
-    //     url : "/api/daily/test/trigger",
-    //     method : "POST",
-    //     dataType : "json",
-    //     success : function(data, status) {
-    //         let slicedData = data.slice(0, 7);
-    //         guestOverviewDatas = slicedData.flatMap(function(d) {
-    //             return d['value'];
-    //         });
-    //         guestOverviewLabels = slicedData.flatMap(function(d){
-    //             const date = new Date(Date.parse(Date(d['label'])));
-    //             return date.getFullYear+"-"+date.getMonth()+"-"+date.getDate();
-    //         });
-    //         console.log(guestOverviewLabels, guestOverviewDatas, guestOverviewChart);
-    //         guestOverviewChart.data.labels=guestOverviewLabels;
-    //         guestOverviewChart.data.datasets[0]['data'] = guestOverviewDatas;
-    //         guestOverviewChart.update();
-    //     }
-    // });
-
-
     var incomeOverviewChart = new Chart(incomeOverviewCanvas, {
         type : 'line',
         data: {
-            labels : ['Sun','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+            labels : [],
             datasets: [
                 {
                     label: 'My First Dataset',
-                    data : [20,30,10,60,100,80,40],
-                    fill: true,
-                    borderColor: 'rgb(75, 192, 192)',
+                    data : [],
+                    fill: {
+                        target: true,
+                        below : "rgba(89, 59, 219, .9)"
+                    },
+                    // borderColor: 'rgb(75, 192, 192)',
+                    // borderColor: 
                     tension: 0.1
                 }
             ]
         }
     });
-
-
+    
+    
     var top5SymptomsChart = new Chart(top5SymptomsCanvas, {
         type : 'pie',
         data: {
-            labels : ['Sun','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+            labels : [],
             datasets: [
                 {
                     label: 'My First Dataset',
-                    data : [20,30,10,60,100,80,40],
+                    data : [],
+                    borderWidth: 0,
+                    backgroundColor: [
+                        "rgba(89, 59, 219, .9)",
+                        "rgba(89, 59, 219, .7)",
+                        "rgba(89, 59, 219, .5)",
+                        "rgba(89, 59, 219, .2)",
+                        "rgba(89, 59, 219, .07)"
+                    ],
+                    hoverBackgroundColor: [
+                        "rgba(89, 59, 219, .9)",
+                        "rgba(89, 59, 219, .7)",
+                        "rgba(89, 59, 219, .5)",
+                        "rgba(89, 59, 219, .2)",
+                        "rgba(89, 59, 219, .07)"
+                    ]
+                    // backgroundColor : gradientBackgroundColor
                 }
             ]
+        },
+        options: {
+            responsive: true,
+            legend: false,
+            // maintainAspectRatio: false
         }
     });
-
+    
     var prescriptionChart = new Chart(prescriptionCanvas, {
         type : 'pie',
         data: {
-            labels : ['Sun','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+            labels : [],
             datasets: [
                 {
                     label: 'My First Dataset',
-                    data : [20,30,10,60,100,80,40],
+                    data : [],
+                    borderWidth: 0,
+                    backgroundColor : [ 
+                        "rgba(52, 57, 87, 1.0)",
+                        "rgba(52, 57, 87, 0.85",
+                        "rgba(52, 57, 87, 0.70)",
+                        "rgba(52, 57, 87, 0.55)",
+                        "rgba(52, 57, 87, 0.40)",
+                        "rgba(52, 57, 87, 0.25)",
+                        "rgba(52, 57, 87, 0.10)"
+                    ],
+                    hoverBackgroundColor: [
+                        "rgba(52, 57, 87, 1.0)",
+                        "rgba(52, 57, 87, 0.85",
+                        "rgba(52, 57, 87, 0.70)",
+                        "rgba(52, 57, 87, 0.55)",
+                        "rgba(52, 57, 87, 0.40)",
+                        "rgba(52, 57, 87, 0.25)",
+                        "rgba(52, 57, 87, 0.10)"
+                    ]
                 }
             ]
+        },
+        options: {
+            responsive: true,
+            legend: false,
+            // maintainAspectRatio: false
         }
     });
+
+    // Initialize load data
+    updateBarChart("/api/daily/guest/overview", guestOverviewChart, 
+        convertGuestOverview, barChartLabelFunction, barChartDataFunction);
+    updateBarChart("/api/daily/income/overview", incomeOverviewChart, 
+        convertGuestOverview, barChartLabelFunction, barChartDataFunction);
+    updateBarChart("/api/daily/top5/symptoms", top5SymptomsChart, 
+        convertGuestOverview, pieChartLabelFunction, barChartDataFunction);
+    updateBarChart("/api/daily/prescription", prescriptionChart, 
+        convertGuestOverview, pieChartLabelFunction, barChartDataFunction);
+
+    // Configure update interval 
+    setInterval(function(){
+            updateBarChart("/api/daily/guest/overview", guestOverviewChart, 
+                convertGuestOverview, barChartLabelFunction, barChartDataFunction);        
+    }, 60000);
+    setInterval(function(){
+        updateBarChart("/api/daily/income/overview", incomeOverviewChart, 
+            convertGuestOverview, barChartLabelFunction, barChartDataFunction);        
+    }, 60000);
+    setInterval(function(){
+        updateBarChart("/api/daily/top5/symptoms", top5SymptomsChart, 
+            convertGuestOverview, pieChartLabelFunction, barChartDataFunction)
+    }, 60000);
+    setInterval(function(){
+        updateBarChart("/api/daily/prescription", prescriptionChart, 
+            convertGuestOverview, pieChartLabelFunction, barChartDataFunction);
+    }, 60000);
+
 })(jQuery);
 
 
