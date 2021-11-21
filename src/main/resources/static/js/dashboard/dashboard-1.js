@@ -3,6 +3,8 @@
     function updateSalesOverviewChart(morrisChart) {
         $.ajax({
             url : "/api/today/income/overview",
+            // url : "/api/today/test/trigger",
+            // type: "POST",
             dataType : "json",
             success : function(datas, status) {
                 morrisChart.setData(datas);
@@ -17,7 +19,11 @@
             dataType : "json",
             success : function(datas, status) {
                 pieChart.data.datasets[0]['data'] = datas.flatMap(element => element['value']);
-                pieChart.data.labels = datas.flatMap(element => element['label']);
+                pieChart.data.labels = datas.flatMap(element => {
+                    const date = new Date(Date.parse(element['label']));
+                    return date.getFullYear()+"-"+date.getMonth()+"-"+date.getDate();
+                });
+                pieChart.update();
             }
         })
     }
