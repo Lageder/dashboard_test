@@ -4,8 +4,10 @@ import com.example.securingweb.model.db.DailyPrescription;
 import com.example.securingweb.model.db.TodayOverview;
 import com.example.securingweb.model.pre.defined.Prescription;
 import com.example.securingweb.model.pre.defined.Symptoms;
+import com.example.securingweb.model.ui.Feedback;
 import com.example.securingweb.model.ui.IncomeOverview;
 import com.example.securingweb.model.ui.TodayGraph;
+import com.example.securingweb.model.ui.TotalIncome;
 import com.example.securingweb.model.ui.daily.GuestGraph;
 import com.example.securingweb.repository.IncomeRepository;
 import com.example.securingweb.repository.PrescriptionRepository;
@@ -60,35 +62,43 @@ public class TodayController {
     @GetMapping("/guest/info")
     public ResponseEntity<List<GuestGraph>> getGuestInfo() {
         List<GuestGraph> ret = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            LocalDateTime now = LocalDateTime.now().minusHours(i);
-            LocalDateTime from = now.truncatedTo(ChronoUnit.HOURS);
-            LocalDateTime to = from.plusHours(1);
-            int sum = 0;
-            for (Symptoms symptom : Symptoms.values()) {
-//                System.out.println("now : " + sdf.format(Date.from(now.atZone(ZoneId.of("UTC")).toInstant())));
-                sum += incomeRepository.countPeople(symptom.name(), from, to);
-            }
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime from = now.truncatedTo(ChronoUnit.HOURS);
+        LocalDateTime to = from.plusHours(1);
+        for (Symptoms symptom : Symptoms.values()) {
+            Integer count = Optional.ofNullable(incomeRepository.countPeople(symptom.name(), from, to))
+                    .orElse(0);
             ret.add(GuestGraph.builder()
-                    .label(sdf.format(Date.from(from.atZone(ZoneId.systemDefault()).toInstant())))
-                    .value(String.valueOf(sum))
+                    .label(symptom.name())
+                    .value(String.valueOf(count))
                     .build());
         }
         return new ResponseEntity<>(ret, HttpStatus.OK);
     }
 
     @GetMapping("/feedback")
-    public ResponseEntity<String> getFeedback() {
+    public ResponseEntity<Feedback> getFeedback() {
         Random r = new Random();
-        int total = 16000;
-        int pos = 10000 + r.nextInt(5000);
-        // todo : Add json parsing
-        String ret = "";
+        int total = 0;
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime from = now.truncatedTo(ChronoUnit.DAYS);
+        LocalDateTime to = from.plusDays(1);
+        for (Symptoms symptom : Symptoms.values()) {
+            total += Optional.ofNullable(incomeRepository.countPeople(symptom.name(), from, to)).orElse(0);
+        }
+        double negative = r.nextInt(total / 10);
+        double positive = total - negative;
+        Feedback ret = Feedback.builder()
+                .positive(positive / total)
+                .negative(negative / total)
+                .progress(positive / total)
+                .total(total)
+                .build();
         return new ResponseEntity<>(ret, HttpStatus.OK);
     }
 
     @GetMapping("/total/income")
-    public ResponseEntity<String> getTotalIncome() {
+    public ResponseEntity<TotalIncome> getTotalIncome() {
         int total = 0;
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime from = now.truncatedTo(ChronoUnit.DAYS);
@@ -96,8 +106,10 @@ public class TodayController {
         for (Symptoms symptom : Symptoms.values()) {
             total += Optional.ofNullable(incomeRepository.getIncomeByTimeRange(symptom.name(), from, to)).orElse(0);
         }
-        // todo : Add json parsing
-        String ret = "";
+        TotalIncome ret = TotalIncome.builder()
+                .value(total)
+                .progress(1.0)
+                .build();
         return new ResponseEntity<>(ret, HttpStatus.OK);
     }
 
