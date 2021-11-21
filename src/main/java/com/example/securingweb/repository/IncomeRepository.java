@@ -45,7 +45,7 @@ public class IncomeRepository {
     }
 
     private long toMs(LocalDateTime t) {
-        return t.atZone(ZoneId.of("UTC")).toInstant().toEpochMilli();
+        return t.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
 }
