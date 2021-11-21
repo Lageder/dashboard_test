@@ -94,6 +94,27 @@
     });
     console.log("CustomerFeedback : ", customerFeedbackProgress);
 
+    function updateTodaysIncome(progressBar, statDigit) {
+        $.ajax({
+            url : "/api/today/total/income",
+            dataType : "json",
+            success : function(data, status) {
+                progressBar.style.setProperty("width", parseInt(data['progress']*100)+"%", "important");
+                statDigit.getElementsByTagName("span")[0].innerText=data['value'];
+                console.log(data);
+                console.log(progressBar);
+                console.log(statDigit);
+            }
+        })
+    }
+
+    var todaysIncomeBar = $(".progress-bar")[0];
+    var todaysIncomeDigit = $(".stat-digit")[0];
+    updateTodaysIncome(todaysIncomeBar, todaysIncomeDigit);
+    setInterval(function() {
+        updateTodaysIncome(todaysIncomeBar, todaysIncomeDigit);
+    }, 60000);
+
 })(jQuery);
 
 // (function($) {
