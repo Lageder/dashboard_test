@@ -233,11 +233,11 @@
 
                 <div class="row">
                     <div class="col-xl-4 col-lg-4 col-md-4">
-                        <div class="card">
+                        <div class="card" style="height: calc(100% - 1.875rem);">
                             <div class="card-header">
                                 <h4 class="card-title">Guest classification</h4>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body" style="display: flex; align-items: center; justify-content: center;">
                                 <div class="chart py-4">
                                     <canvas id="guest-classification"></canvas>
                                 </div>
@@ -255,10 +255,22 @@
                                     <i class="ti-control-shuffle pa"></i>
                                 </div>
                                 <ul class="widget-line-list m-b-15">
-                                    <li class="border-right">92% <br><span class="text-success"><i
-                                                class="ti-hand-point-up"></i> Positive</span></li>
-                                    <li>8% <br><span class="text-danger"><i
-                                                class="ti-hand-point-down"></i>Negative</span></li>
+                                    <li class="border-right">
+                                        <span id="feedback-positive">92</span>%
+                                        <br>
+                                        <span class="text-success">
+                                            <i class="ti-hand-point-up"></i> 
+                                            Positive
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span id="feedback-negative">8</span>%
+                                        <br>
+                                        <span class="text-danger">
+                                            <i class="ti-hand-point-down"></i>
+                                            Negative
+                                        </span>
+                                    </li>
                                 </ul>
                             </div>
                         </div>

@@ -19,10 +19,7 @@
             dataType : "json",
             success : function(datas, status) {
                 pieChart.data.datasets[0]['data'] = datas.flatMap(element => element['value']);
-                pieChart.data.labels = datas.flatMap(element => {
-                    const date = new Date(Date.parse(element['label']));
-                    return date.getFullYear()+"-"+date.getMonth()+"-"+date.getDate();
-                });
+                pieChart.data.labels = datas.flatMap(element => element['label']);
                 pieChart.update();
             }
         })
@@ -85,14 +82,28 @@
     }, 60000);
     console.log("Guest Classification : ", guestClassificationChart);
 
-    var customerFeedbackProgress = $('#customer-feedback').circleProgress({
-        value: 0.70,
-        size: 100,
-        fill: {
-            gradient: ["#a389d5"]
-        }
-    });
-    console.log("CustomerFeedback : ", customerFeedbackProgress);
+
+    function updateCustomerFeedback() {
+        $.ajax({
+            url: "/api/today/feedback",
+            dataType : "json",
+            success: function(data, status) {
+                $("#feedback-positive").text(data['positive'].toFixed(2));
+                $("#feedback-negative").text(data['negative'].toFixed(2));
+                $("h2.mt-3").text(data['total']);
+                $('#customer-feedback').circleProgress({
+                    value: data['progress'].toFixed(2),
+                    size: 100,
+                    fill: {
+                        gradient: ["#a389d5"]
+                    },
+                    animation: false
+                })
+            }
+        })
+    };
+    updateCustomerFeedback();
+    setInterval(updateCustomerFeedback, 60000);
 
     function updateTodaysIncome(progressBar, statDigit) {
         $.ajax({
