@@ -117,20 +117,13 @@ public class TodayController {
     public ResponseEntity<Void> trigger() {
         try {
             Random r = new Random();
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < 100000; i++) {
                 Symptoms symptom = randomSymptom();
                 Prescription prescription = randomPrescription(symptom);
-                LocalDateTime time = LocalDateTime.now().minusDays(r.nextInt(14));
-                TodayOverview temp = new TodayOverview(symptom.name(), time, r.nextInt(5000));
-                DailyPrescription dailyPrescription = new DailyPrescription(prescription.name(), time);
-                incomeRepository.insert(temp);
-                prescriptionRepository.insert(dailyPrescription);
-            }
-            for (int i = 0; i < 500; i++) {
-                Symptoms symptom = randomSymptom();
-                Prescription prescription = randomPrescription(symptom);
-                LocalDateTime time = LocalDateTime.now().minusHours(r.nextInt(7));
-                TodayOverview temp = new TodayOverview(symptom.name(), time, r.nextInt(5000));
+                LocalDateTime time = LocalDateTime.now()
+                        .minusHours(r.nextInt(23))
+                        .plusDays(r.nextInt(14));
+                TodayOverview temp = new TodayOverview(symptom.name(), time, r.nextInt(200));
                 DailyPrescription dailyPrescription = new DailyPrescription(prescription.name(), time);
                 incomeRepository.insert(temp);
                 prescriptionRepository.insert(dailyPrescription);
