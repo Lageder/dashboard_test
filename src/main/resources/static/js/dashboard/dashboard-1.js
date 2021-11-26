@@ -105,23 +105,27 @@
     updateCustomerFeedback();
     setInterval(updateCustomerFeedback, 60000);
 
-    function updateTodaysIncome(progressBar, statDigit) {
+    function updateTodaysIncome(progressBar, salesDigit, cusommerDigit) {
         $.ajax({
             url : "/api/today/total/income",
             dataType : "json",
             success : function(data, status) {
                 progressBar.style.setProperty("width", parseInt(data['progress']*100)+"%", "important");
-                statDigit.getElementsByTagName("span")[0].innerText=data['value'];
+
+                salesDigit.text(data['value']);
+                cusommerDigit.text(data['total']);
                 console.log(data);
                 console.log(progressBar);
-                console.log(statDigit);
+                console.log(salesDigit);
+                console.log(cusommerDigit);
             }
         })
     }
 
     var todaysIncomeBar = $(".progress-bar")[0];
-    var todaysIncomeDigit = $(".stat-digit")[0];
-    updateTodaysIncome(todaysIncomeBar, todaysIncomeDigit);
+    var todaysIncomeCustommerDigit = $("#cotommer-value");
+    var todaysIncomeSalesDigit = $("#digit-value");
+    updateTodaysIncome(todaysIncomeBar, todaysIncomeSalesDigit, todaysIncomeCustommerDigit);
     setInterval(function() {
         updateTodaysIncome(todaysIncomeBar, todaysIncomeDigit);
     }, 60000);
