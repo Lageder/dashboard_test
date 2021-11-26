@@ -99,16 +99,19 @@ public class TodayController {
 
     @GetMapping("/total/income")
     public ResponseEntity<TotalIncome> getTotalIncome() {
-        int total = 0;
+        int value = 0;
+        int people = 0;
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime from = now.truncatedTo(ChronoUnit.DAYS);
         LocalDateTime to = from.plusDays(1);
         for (Symptoms symptom : Symptoms.values()) {
-            total += Optional.ofNullable(incomeRepository.getIncomeByTimeRange(symptom.name(), from, to)).orElse(0);
+            value += Optional.ofNullable(incomeRepository.getIncomeByTimeRange(symptom.name(), from, to)).orElse(0);
+            people += Optional.ofNullable(incomeRepository.countPeople(symptom.name(), from, to)).orElse(0);
         }
         TotalIncome ret = TotalIncome.builder()
-                .value(total)
+                .value(value)
                 .progress(1.0)
+                .total(people)
                 .build();
         return new ResponseEntity<>(ret, HttpStatus.OK);
     }

@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class TotalIncome {
     private Integer value;
     private Double progress;
+    private Integer total;
 }
