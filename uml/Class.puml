@@ -1,0 +1,124 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class DailyController {
+- incomeService : IncomeService
+- prescriptionService : PrescriptionService
+
++ getGuestInfo() : ResponseEntity<List<GuestGraph>>
++ getIncomeOverview() : ResponseEntity<List<GuestGraph>>
++ getTop5Symptoms() : ResponseEntity<List<GuestGraph>>
++ getDailyPrescription() : ResponseEntity<List<GuestGraph>>
+}
+
+class TodayController {
+- incomeService : IncomeService
+- prescriptionService : PrescriptionService
+
++ getIncome() : ResponseEntity<List<IncomeOverview>>
++ getGuestInfo() : ResponseEntity<List<GuestGraph>>
++ getFeedback() : ResponseEntity<Feedback>
++ getTotalIncome() : ResponseEntity<TotalIncome>
+}
+
+class GuestGraph {
+- label : String
+- value : String
+}
+
+class IncomeOverview {
+- hour : String
+- income : Integer
+}
+
+class Feedback {
+- positive : Double
+- negative : Double
+- progress : Double
+- total : Integer
+}
+
+class TotalIncome {
+- value : Integer
+- progress : Double
+- total : Integer
+}
+
+class IncomeService {
+- repository : IncomeRepository
+- sdf : SimpleDateFormat
+- hourSdf : SimpleDateFormat
+
++ getGuestInfo() : List<GuestGraph>
++ getIncomeOverview() : List<GuestGraph>
++ getTop5Symptoms() : List<GuestGraph>
++ getTodayIncome() : List<IncomeOverview>
++ getTodayGuestInfo() : List<GuestGraph>
++ getFeedback() : Feedback
++ getTodayTotalIncome() : TotalIncome
++ insert() : void
+}
+
+class PrescriptionService {
+- repository : PrescriptionRepository
++ getDailyPrescription() : List<GuestGraph>
+}
+
+class IncomeRepository {
+- operations : CassandraOperations
++ getIncomeByTimeRange(symptom String, from LocalDateTime, to LocalDateTime) : Integer
++ countPeople(symptom String, from LocalDateTime, to LocalDateTime) : Integer
++ insert(overview TodayOverview) : TodayOverview
+- toMs(t LocalDateTime) : long
+}
+
+class PrescriptionRepository {
+- operations : CassandraOperations
++ countWithRange(name String, from LocalDateTime, to LocalDateTime) : Integer
++ insert(prescription DailyPrescription) : DailyPrescription
+- toMs(t LocalDateTime) : long
+}
+
+class TodayOverview {
+- symptom : String
+- visitTime : LocalDateTime
+- fee : int
+}
+
+class DailyPrescription {
+- name : String
+- deployTime : LocalDateTime
+}
+
+abstract class CassandraOperations
+
+DailyController ..> GuestGraph
+TodayController ..> GuestGraph
+TodayController ..> IncomeOverview
+TodayController ..> Feedback
+TodayController ..> TotalIncome
+
+IncomeService ..> GuestGraph
+IncomeService ..> IncomeOverview
+IncomeService ..> Feedback
+IncomeService ..> TotalIncome
+
+PrescriptionService ..> GuestGraph
+
+DailyController --> IncomeService
+DailyController --> PrescriptionService
+
+TodayController --> IncomeService
+TodayController --> PrescriptionService
+
+IncomeService --> IncomeRepository
+
+PrescriptionService --> PrescriptionRepository
+
+IncomeRepository ..> TodayOverview
+IncomeRepository --> CassandraOperations
+
+PrescriptionRepository ..> DailyPrescription
+PrescriptionRepository --> CassandraOperations
+
+@enduml

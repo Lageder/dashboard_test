@@ -1,0 +1,62 @@
+@startuml
+'https://plantuml.com/use-case-diagram
+
+left to right direction
+
+:User: as user
+:Auth Manager: as auth
+:Database: as db
+
+rectangle Doctors {
+  usecase "Show latest income chart" as uc1
+  usecase "Show what kind of\n guests were here" as uc2
+  usecase "Show evaluation of guests" as uc3
+  usecase "Show today's income" as uc4
+  usecase "Show the number of\n guests this week" as uc5
+  usecase "Show the chart of\n income this week" as uc6
+  usecase "Show the top 5 symptoms \nof guests this week" as uc7
+  usecase "Show prescription chart" as uc8
+  usecase "Sign in" as iuc1 << Includes >>
+
+  usecase "Save income with current time" as uc9
+  usecase "Save guest information with current time" as uc10
+  usecase "Save prescription with current time" as uc11
+  usecase "Return data in specific time range" as uc12
+
+  usecase "Show support page" as uc13
+
+  uc1 ..> iuc1
+  uc2 ..> iuc1
+  uc3 ..> iuc1
+  uc4 ..> iuc1
+  uc5 ..> iuc1
+  uc6 ..> iuc1
+  uc7 ..> iuc1
+  uc8 ..> iuc1
+  uc13 ..> iuc1
+
+  iuc1 -[hidden]- uc9
+  iuc1 -[hidden]- uc10
+  iuc1 -[hidden]- uc11
+  iuc1 -[hidden]- uc12
+
+}
+
+user -- uc1
+user -- uc2
+user -- uc3
+user -- uc4
+user -- uc5
+user -- uc6
+user -- uc7
+user -- uc8
+user -- uc13
+
+iuc1 -- auth
+
+uc9 -- db
+uc10 -- db
+uc11 -- db
+uc12 -- db
+
+@enduml

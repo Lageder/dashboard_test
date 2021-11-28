@@ -1,0 +1,34 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+actor User as user
+participant Application as app
+database Database as db
+
+== Sign in ==
+note over user, app : Assume that User already knew the auth information
+
+user -> app : Visit page
+app --> user : show sign in page
+
+user -> app : Try sign in with id / pw
+activate app
+app --> app : Validate authentication
+app --> user : return validation result
+deactivate app
+
+== Dashboard ==
+note over user, db : Assume that User sign in properly
+
+user -> app : Visit dashboard
+activate app
+app -> db : query income with time range
+db --> app : return income
+app -> db : query the number of guests with time range
+db --> app : return the number of guests
+app -> db : query prescription with time range
+db --> app : return the prescription info
+app --> user : Show dashboard info
+deactivate app
+
+@enduml
