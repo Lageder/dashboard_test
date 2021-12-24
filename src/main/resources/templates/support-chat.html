@@ -8,8 +8,12 @@
     <title>Focus - Bootstrap Admin Dashboard </title>
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="./images/favicon.png">
-    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="./vendor/owl-carousel/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="./vendor/owl-carousel/css/owl.theme.default.min.css">
+    <link href="./vendor/jqvmap/css/jqvmap.min.css" rel="stylesheet">
     <link href="./css/style.css" rel="stylesheet">
+
+
 
 </head>
 
@@ -172,7 +176,7 @@
                 <ul class="metismenu" id="menu">
                     <li class="nav-label first">Main Menu</li>
                     <li><a class="has-arrow" href="javascript:void()" aria-expanded="false"><i
-                            class="icon icon-single-04"></i><span class="nav-text">Overview</span></a>
+                                class="icon icon-single-04"></i><span class="nav-text">Overview</span></a>
                         <ul aria-expanded="false">
                             <li><a href="./index">Today</a></li>
                             <li><a href="./index2">Daily</a></li>
@@ -180,7 +184,7 @@
                     </li>
                     <li class="nav-label">Extra</li>
                     <li><a class="has-arrow" href="javascript:void()" aria-expanded="false"><i
-                            class="icon icon-single-copy-06"></i><span class="nav-text">Pages</span></a>
+                                class="icon icon-single-copy-06"></i><span class="nav-text">Pages</span></a>
                         <ul aria-expanded="false">
                             <li><a href="./support">Support</a></li>
                         </ul>
@@ -199,83 +203,35 @@
             Content body start
         ***********************************-->
         <div class="content-body">
+            <!-- row -->
             <div class="container-fluid">
-                <!-- row -->
+                <div class="row">
+
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">Username</div>
+                            <div class="card-body">
+                                <input type="text" id="nickname" class="form-inline" placeholder="Put your username here" required autofocus>
+                                <button class="btn btn-primary" id="name">OK</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
 
                 <div class="row">
-                    <div class="col-lg-12">
+                    <div class="col-12">
                         <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title">Mechanics</h4>
-                            </div>
+                            <div class="card-header">Chat room</div>
                             <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-responsive-sm">
-                                        <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Name</th>
-                                                <th>Status</th>
-                                                <th>Office Hours</th>
-                                                <th>Contact Point</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <th>1</th>
-                                                <td>David Williams</td>
-                                                <td><span class="badge badge-primary">Chief</span>
-                                                </td>
-                                                <td>Every weekday 09:30 ~ 19:30</td>
-                                                <td>+821012345678</td>
-                                            </tr>
-                                            <tr>
-                                                <th>2</th>
-                                                <td>Richard Smith</td>
-                                                <td><span class="badge badge-light">Engineer</span>
-                                                </td>
-                                                <td>Every weekday 15:30 ~ 23:30</td>
-                                                <td>+821023451234</td>
-                                            </tr>
-                                            <tr>
-                                                <th>3</th>
-                                                <td>Mark Smith</td>
-                                                <td><span class="badge badge-light">Engineer</span>
-                                                </td>
-                                                <td>Every weekday 22:00 ~ 10:30</td>
-                                                <td>+821034561234</td>
-                                            </tr>
-                                            <tr>
-                                                <th>4</th>
-                                                <td>Brian Johns</td>
-                                                <td><span class="badge badge-primary">Chief</span>
-                                                </td>
-                                                <td>Every weekend 09:00 ~ 18:30</td>
-                                                <td>+821012349876</td>
-                                            </tr>
-                                            <tr>
-                                                <th>5</th>
-                                                <td>Edward Kevin</td>
-                                                <td><span class="badge badge-light">Engineer</span>
-                                                </td>
-                                                <td>Every weekend 14:00 ~ 00:00</td>
-                                                <td>+821023451234</td>
-                                            </tr>
-                                            <tr>
-                                                <th>6</th>
-                                                <td>Donna Perez</td>
-                                                <td><span class="badge badge-light">Engineer</span>
-                                                </td>
-                                                <td>Every weekend 21:00 ~ 10:00</td>
-                                                <td>+821034561234</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                <div class="chatLog" id="chatroom"></div>
+                                <input type="text" autocomplete="off" size="30" id="message" placeholder="메시지를 입력하세요">
+                                <button class="btn btn-primary" id="send">Send</button>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
         <!--**********************************
@@ -289,6 +245,7 @@
         <div class="footer">
             <div class="copyright">
                 <p>Copyright © Designed &amp; Developed by <a href="#" target="_blank">Quixkit</a> 2019</p>
+                <p>Distributed by <a href="https://themewagon.com/" target="_blank">Themewagon</a></p> 
             </div>
         </div>
         <!--**********************************
@@ -303,7 +260,7 @@
            Support ticket button end
         ***********************************-->
 
-        
+
     </div>
     <!--**********************************
         Main wrapper end
@@ -316,10 +273,71 @@
     <script src="./vendor/global/global.min.js"></script>
     <script src="./js/quixnav-init.js"></script>
     <script src="./js/custom.min.js"></script>
-    
 
 
+    <!-- Vectormap -->
+    <script src="./vendor/raphael/raphael.min.js"></script>
+    <script src="./vendor/morris/morris.min.js"></script>
 
+
+    <script src="./vendor/circle-progress/circle-progress.min.js"></script>
+    <script src="./vendor/chart.js/Chart.bundle.min.js"></script>
+
+    <script src="./vendor/gaugeJS/dist/gauge.min.js"></script>
+
+    <!--  flot-chart js -->
+    <script src="./vendor/flot/jquery.flot.js"></script>
+    <script src="./vendor/flot/jquery.flot.resize.js"></script>
+
+    <!-- Owl Carousel -->
+    <script src="./vendor/owl-carousel/js/owl.carousel.min.js"></script>
+
+    <!-- Counter Up -->
+    <script src="./vendor/jqvmap/js/jquery.vmap.min.js"></script>
+    <script src="./vendor/jqvmap/js/jquery.vmap.usa.js"></script>
+    <script src="./vendor/jquery.counterup/jquery.counterup.min.js"></script>
+
+
+    <script src="./js/dashboard/dashboard-1.js"></script>
+    <script>
+        var webSocket;
+        var nickname;
+        document.getElementById("name").addEventListener("click", function(){
+            nickname = document.getElementById("nickname").value;
+            document.getElementById("nickname").style.display="none";
+            document.getElementById("name").style.display="none";
+            connect();
+        })
+        document.getElementById("send").addEventListener("click",function(){
+            send();
+        })
+        function connect(){
+            webSocket = new WebSocket("ws://localhost:8080/chat");
+            webSocket.onopen = onOpen;
+            webSocket.onclose = onClose;
+            webSocket.onmessage = onMessage;
+        }
+        function disconnect(){
+            webSocket.send(nickname + "has left this chat");
+            webSocket.close();
+        }
+        function send(){
+            msg = document.getElementById("message").value;
+            webSocket.send(nickname + " : " + msg);
+            document.getElementById("message").value = "";
+        }
+        function onOpen(){
+            webSocket.send(nickname + "has entered this chat");
+        }
+        function onMessage(e){
+            data = e.data;
+            chatroom = document.getElementById("chatroom");
+            chatroom.innerHTML = chatroom.innerHTML + "<br>" + data;
+        }
+        function onClose(){
+
+        }
+    </script>
 </body>
 
 </html>

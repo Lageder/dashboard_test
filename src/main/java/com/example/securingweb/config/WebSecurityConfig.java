@@ -23,7 +23,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/", "/index", "/api/**", "/support")
+                .antMatchers("/", "/index", "/api/**", "/support", "/support-chat")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
@@ -51,6 +51,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .password("password1!")
                 .roles("USER")
                 .build();
-        return new InMemoryUserDetailsManager(user);
+        UserDetails admin = User.withDefaultPasswordEncoder()
+                .username("dev@google.com")
+                .password("password1!")
+                .roles("USER")
+                .build();
+        return new InMemoryUserDetailsManager(user, admin);
     }
 }
