@@ -205,14 +205,14 @@
         <div class="content-body">
             <!-- row -->
             <div class="container-fluid">
-                <div class="row">
+                <div class="row" id="usernameRow">
 
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">Username</div>
                             <div class="card-body">
-                                <input type="text" id="nickname" class="form-inline" placeholder="Put your username here" required autofocus>
-                                <button class="btn btn-primary" id="name">OK</button>
+                                <input type="text" id="nickname" class="form-control input-rounded" placeholder="Put your username here" required autofocus>
+                                <button class="btn btn-rounded btn-primary" id="name">OK</button>
                             </div>
                         </div>
                     </div>
@@ -222,11 +222,21 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
-                            <div class="card-header">Chat room</div>
+                            <div class="card-header">Chat Log</div>
                             <div class="card-body">
-                                <div class="chatLog" id="chatroom"></div>
-                                <input type="text" autocomplete="off" size="30" id="message" placeholder="메시지를 입력하세요">
-                                <button class="btn btn-primary" id="send">Send</button>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="chatLog" id="chatroom"></div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-10">
+                                        <input type="text" class="form-control input-rounded" autocomplete="off" size="30" id="message" placeholder="Type message here">
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-rounded btn-primary" id="send">Send</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -306,6 +316,7 @@
             nickname = document.getElementById("nickname").value;
             document.getElementById("nickname").style.display="none";
             document.getElementById("name").style.display="none";
+            document.getElementById("usernameRow").style.display="none";
             connect();
         })
         document.getElementById("send").addEventListener("click",function(){
@@ -318,21 +329,30 @@
             webSocket.onmessage = onMessage;
         }
         function disconnect(){
-            webSocket.send(nickname + "has left this chat");
+            msg = nickname + " has left this chat"
+            webSocket.send(JSON.stringify({author:nickname,message:msg}));
             webSocket.close();
         }
         function send(){
             msg = document.getElementById("message").value;
-            webSocket.send(nickname + " : " + msg);
+            webSocket.send(JSON.stringify({author:nickname,message:msg}));
             document.getElementById("message").value = "";
         }
         function onOpen(){
-            webSocket.send(nickname + "has entered this chat");
+            msg = nickname + " has entered this chat"
+            webSocket.send(JSON.stringify({author:nickname,message:msg}));
         }
         function onMessage(e){
-            data = e.data;
+            console.log(JSON.parse(e.data))
+            const obj = JSON.parse(e.data)
+            msg = obj.message;
+            author = obj.author;
             chatroom = document.getElementById("chatroom");
-            chatroom.innerHTML = chatroom.innerHTML + "<br>" + data;
+            if (nickname == obj.author) {
+            chatroom.innerHTML = chatroom.innerHTML + "<div class=\"alert alert-light solid alert-rounded\">" + msg;
+            } else {
+            chatroom.innerHTML = chatroom.innerHTML + "<div class=\"alert alert-primary solid alert-rounded\">" + msg;
+            }
         }
         function onClose(){
 

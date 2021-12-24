@@ -1,5 +1,8 @@
 package com.example.securingweb.handler;
 
+import com.example.securingweb.model.ws.ChatMessage;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -10,7 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class WebSocketHandler extends TextWebSocketHandler {
+
+    private final ObjectMapper objectMapper;
+
     private List<WebSocketSession> sessionList = new ArrayList<>();
 
     @Override
@@ -22,8 +29,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         System.out.printf("Send msg : %s : %s %n", session, message.getPayload());
+        ChatMessage chatMessage = objectMapper.readValue(message.getPayload(), ChatMessage.class);
         for (WebSocketSession ws : sessionList) {
-            TextMessage msg = new TextMessage(message.getPayload());
+            TextMessage msg = new TextMessage(objectMapper.writeValueAsString(chatMessage));
             ws.sendMessage(msg);
         }
     }
